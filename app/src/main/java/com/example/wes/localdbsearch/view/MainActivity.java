@@ -1,4 +1,4 @@
-package com.example.wes.localdbsearch.View;
+package com.example.wes.localdbsearch.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

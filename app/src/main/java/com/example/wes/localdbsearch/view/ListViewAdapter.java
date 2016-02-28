@@ -1,4 +1,4 @@
-package com.example.wes.localdbsearch.View;
+package com.example.wes.localdbsearch.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
