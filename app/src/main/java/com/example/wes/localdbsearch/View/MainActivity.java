@@ -1,17 +1,13 @@
 package com.example.wes.localdbsearch.View;
 
-import android.app.SearchManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.example.wes.localdbsearch.R;
 import com.example.wes.localdbsearch.controller.CardController;
 import com.example.wes.localdbsearch.model.Card;
-import com.example.wes.localdbsearch.model.SearchResult;
 
 import java.util.ArrayList;
 
@@ -39,18 +35,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        ArrayList<SearchResult> searchResults = cardController.searchCards(newText);
+        ArrayList<Card> cards = cardController.searchCards(newText);
 
-        ListViewAdapter lva = new ListViewAdapter(this.getApplicationContext(), R.layout.list_item, searchResults);
+        ListViewAdapter lva = new ListViewAdapter(this.getApplicationContext(), R.layout.list_item, cards);
         listView.setAdapter(lva);
         return false;
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        ArrayList<SearchResult> searchResults = cardController.searchCards(query);
+        ArrayList<Card> cards = cardController.searchCards(query);
 
-        ListViewAdapter lva = new ListViewAdapter(this.getApplicationContext(), R.layout.list_item, searchResults);
+        ListViewAdapter lva = new ListViewAdapter(this.getApplicationContext(), R.layout.list_item, cards);
         listView.setAdapter(lva);
         return false;
     }

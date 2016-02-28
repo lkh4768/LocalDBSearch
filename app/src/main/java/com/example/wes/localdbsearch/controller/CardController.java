@@ -1,10 +1,10 @@
 package com.example.wes.localdbsearch.controller;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.wes.localdbsearch.db.CardDAO;
 import com.example.wes.localdbsearch.model.Card;
-import com.example.wes.localdbsearch.model.SearchResult;
 
 import java.util.ArrayList;
 
@@ -38,15 +38,15 @@ public class CardController {
         }
     }
 
-    public ArrayList<SearchResult> searchCards(String keyword) {
-        ArrayList<SearchResult> searchResults = new ArrayList<SearchResult>();
-        ArrayList<SearchResult> partOfSearchResults = null;
+    public ArrayList<Card> searchCards(String keyword) {
+        ArrayList<Card> cards = new ArrayList<Card>();
+        ArrayList<Card> partOfCards = null;
 
-        for (Card.CARD_COL cardsCol : Card.CARD_COL.values()) {
-            partOfSearchResults = cardDAO.searchDB(cardsCol, keyword);
-            searchResults.addAll(partOfSearchResults);
+        for (CardEntityFactory.CARD_ENTITY_TYPE cardEntityType : CardEntityFactory.CARD_ENTITY_TYPE.values()) {
+            partOfCards = cardDAO.searchDB(cardEntityType, keyword);
+            cards.addAll(partOfCards);
         }
-        return searchResults;
+        return cards;
     }
 
     public void deleteAllCards() {

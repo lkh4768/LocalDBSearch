@@ -9,7 +9,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 import com.example.wes.localdbsearch.model.Card;
-import com.example.wes.localdbsearch.model.SearchResult;
+import com.example.wes.localdbsearch.model.CardEntity;
+import com.example.wes.localdbsearch.controller.CardEntityFactory;
 
 import java.util.ArrayList;
 
@@ -31,12 +32,12 @@ public class CardDAO extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CARD_TABLE = "CREATE VIRTUAL TABLE " + CARDS_VIRTUAL_TABLE + " USING fts3 ( " +
-                Card.CARD_COL.NAME.getColumnName() + ", " +
-                Card.CARD_COL.COMPANY.getColumnName() + ", " +
-                Card.CARD_COL.DEPARTEMENT.getColumnName() + ", " +
-                Card.CARD_COL.POSITION.getColumnName() + ", " +
-                Card.CARD_COL.PHONE.getColumnName() + ", " +
-                Card.CARD_COL.ADDRESS.getColumnName() + ")";
+                CardEntityFactory.CARD_ENTITY_TYPE.NAME.getType() + ", " +
+                CardEntityFactory.CARD_ENTITY_TYPE.COMPANY.getType() + ", " +
+                CardEntityFactory.CARD_ENTITY_TYPE.DEPARTMENT.getType() + ", " +
+                CardEntityFactory.CARD_ENTITY_TYPE.POSITION.getType() + ", " +
+                CardEntityFactory.CARD_ENTITY_TYPE.PHONE.getType() + ", " +
+                CardEntityFactory.CARD_ENTITY_TYPE.ADDRESS.getType() + ")";
 
         db.execSQL(CREATE_CARD_TABLE);
     }
@@ -55,22 +56,22 @@ public class CardDAO extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(Card.CARD_COL.NAME.getColumnName(), card.getName());
-        values.put(Card.CARD_COL.COMPANY.getColumnName(), card.getCompany());
-        values.put(Card.CARD_COL.DEPARTEMENT.getColumnName(), card.getDepartment());
-        values.put(Card.CARD_COL.POSITION.getColumnName(), card.getPosition());
-        values.put(Card.CARD_COL.PHONE.getColumnName(), card.getPhone());
-        values.put(Card.CARD_COL.ADDRESS.getColumnName(), card.getAddress());
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.NAME.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.NAME));
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.COMPANY.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.COMPANY));
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.DEPARTMENT.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.DEPARTMENT));
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.POSITION.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.POSITION));
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.PHONE.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.PHONE));
+        values.put(CardEntityFactory.CARD_ENTITY_TYPE.ADDRESS.getType(), card.getValue(CardEntityFactory.CARD_ENTITY_TYPE.ADDRESS));
 
         db.insert(CARDS_VIRTUAL_TABLE, null, values);
 
         db.close();
     }
 
-    public ArrayList<SearchResult> searchDB(Card.CARD_COL key, String value) {
-        ArrayList<SearchResult> searchResults = new ArrayList<SearchResult>();
+    public ArrayList<Card> searchDB(CardEntityFactory.CARD_ENTITY_TYPE cardEntityType, String value) {
+        ArrayList<Card> cards = new ArrayList<Card>();
 
-        String selection = key.getColumnName() + " LIKE ?";
+        String selection = cardEntityType.getType() + " LIKE ?";
         String[] selectionArgs = new String[]{"%" + value + "%"};
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -79,20 +80,45 @@ public class CardDAO extends SQLiteOpenHelper {
         Cursor cursor = builder.query(this.getReadableDatabase(),
                 null, selection, selectionArgs, null, null, null);
 
-        SearchResult searchResult = null;
         Card card = null;
+        CardEntity nameEntity = null;
+        CardEntity companyEntity = null;
+        CardEntity departmentEntity = null;
+        CardEntity positionEntity = null;
+        CardEntity phoneEntity = null;
+        CardEntity addressEntity = null;
+
+        ArrayList<CardEntity> cardEntities = null;
+
+        CardEntityFactory cardEntityFactory = new CardEntityFactory();
 
         if (cursor.moveToFirst()) {
             do {
-                card = new Card(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+                nameEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.NAME, cursor.getString(0));
+                companyEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.COMPANY, cursor.getString(1));
+                departmentEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.DEPARTMENT, cursor.getString(2));
+                positionEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.POSITION, cursor.getString(3));
+                phoneEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.PHONE, cursor.getString(4));
+                addressEntity = cardEntityFactory.createCarEntity(CardEntityFactory.CARD_ENTITY_TYPE.ADDRESS, cursor.getString(5));
 
-                searchResult = new SearchResult(card, key);
-                searchResults.add(searchResult);
+                cardEntities = new ArrayList<CardEntity>();
+                cardEntities.add(nameEntity);
+                cardEntities.add(companyEntity);
+                cardEntities.add(departmentEntity);
+                cardEntities.add(positionEntity);
+                cardEntities.add(phoneEntity);
+                cardEntities.add(addressEntity);
+
+                card = new Card(cardEntities);
+
+                card.setIsKeywordOfCardEntity(cardEntityType);
+
+                cards.add(card);
 
             } while (cursor.moveToNext());
         }
 
-        return searchResults;
+        return cards;
     }
 
     public void deleteAllDB() {

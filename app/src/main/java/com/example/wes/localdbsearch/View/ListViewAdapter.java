@@ -8,21 +8,22 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.wes.localdbsearch.R;
-import com.example.wes.localdbsearch.model.SearchResult;
+import com.example.wes.localdbsearch.model.Card;
+import com.example.wes.localdbsearch.controller.CardEntityFactory;
 
 import java.util.ArrayList;
 
 /**
  * Created by wes on 16. 2. 26.
  */
-public class ListViewAdapter extends ArrayAdapter<SearchResult> {
+public class ListViewAdapter extends ArrayAdapter<Card> {
     private Context context;
-    private ArrayList<SearchResult> searchResults;
+    private ArrayList<Card> cards;
 
-    public ListViewAdapter(Context context, int resource, ArrayList<SearchResult> searchResults) {
-        super(context, resource, searchResults);
+    public ListViewAdapter(Context context, int resource, ArrayList<Card> cards) {
+        super(context, resource, cards);
         this.context = context;
-        this.searchResults = searchResults;
+        this.cards = cards;
     }
 
     @Override
@@ -38,11 +39,11 @@ public class ListViewAdapter extends ArrayAdapter<SearchResult> {
         TextView textViewOfSearchColumn = (TextView) rowView.findViewById(R.id.searchColumn);
         TextView textViewOfSearchKeyword = (TextView) rowView.findViewById(R.id.searchKeyword);
 
-        textViewOfName.setText(searchResults.get(position).getCard().getName());
-        textViewOfCompany.setText(searchResults.get(position).getCard().getCompany());
-        textViewOfPosition.setText(searchResults.get(position).getCard().getPosition());
-        textViewOfSearchColumn.setText(searchResults.get(position).getSearchColumn());
-        textViewOfSearchKeyword.setText(searchResults.get(position).getSearchKeyword());
+        textViewOfName.setText(cards.get(position).getValue(CardEntityFactory.CARD_ENTITY_TYPE.NAME));
+        textViewOfCompany.setText(cards.get(position).getValue(CardEntityFactory.CARD_ENTITY_TYPE.COMPANY));
+        textViewOfPosition.setText(cards.get(position).getValue(CardEntityFactory.CARD_ENTITY_TYPE.POSITION));
+        textViewOfSearchColumn.setText(cards.get(position).getKeywordOfKoreaNameOfType());
+        textViewOfSearchKeyword.setText(cards.get(position).getKeywordValue());
 
         return rowView;
     }
