@@ -42,9 +42,11 @@ public class CardController {
         ArrayList<Card> cards = new ArrayList<Card>();
         ArrayList<Card> partOfCards = null;
 
-        for (CardEntityFactory.CARD_ENTITY_TYPE cardEntityType : CardEntityFactory.CARD_ENTITY_TYPE.values()) {
-            partOfCards = cardDAO.searchDB(cardEntityType, keyword);
-            cards.addAll(partOfCards);
+        if (!keyword.isEmpty()) {
+            for (CardEntityFactory.CARD_ENTITY_TYPE cardEntityType : CardEntityFactory.CARD_ENTITY_TYPE.values()) {
+                partOfCards = cardDAO.searchDB(cardEntityType, keyword);
+                cards.addAll(partOfCards);
+            }
         }
         return cards;
     }
