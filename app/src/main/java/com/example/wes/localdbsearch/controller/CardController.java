@@ -24,7 +24,7 @@ public class CardController {
         Card card = null;
         RandomCardCreator randomCardCreator = new RandomCardCreator();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             card = randomCardCreator.createRandomCard();
             cards.add(card);
         }
